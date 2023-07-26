@@ -1,5 +1,6 @@
 BasedOnStyle: LLVM
 AllowShortLoopsOnASingleLine: 'false'
+ArrayInitializerAlignmentStyle Right
 BraceWrapping:
   AfterCaseLabel:  false
   AfterClass:      false
@@ -20,7 +21,7 @@ BraceWrapping:
 BreakBeforeBraces: Custom
 BreakBeforeTernaryOperators: 'false'
 BreakStringLiterals: 'true'
-ColumnLimit: '92'
+ColumnLimit: '96'
 Cpp11BracedListStyle: 'true'
 IndentCaseLabels: 'true'
 IndentWidth: '4'

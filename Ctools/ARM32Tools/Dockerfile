@@ -12,26 +12,54 @@
 
 
 FROM ubuntu:22.04
-WORKDIR /tools
 
+ENV USERNAME="dev"
+# log file
+ENV LOGNAME="log.txt"
+# directories
+ENV SRCDIR=/src
+ENV TOOLDIR=/tools
 # arm gcc toolchain download path
 ENV GCC_ARM_DOWNLOAD_URL=https://developer.arm.com/-/media/Files/downloads/gnu-rm/10-2020q4/gcc-arm-none-eabi-10-2020-q4-major-x86_64-linux.tar.bz2
 ENV GCC_ARM_FILENAME=gcc-arm-none-eabi-10-2020-q4-major
 
+# make user and home dir
+RUN useradd -m -U $USERNAME
+RUN mkdir -p -v /home/$USERNAME/.config/nvim/
+
+# update and get build tools
 RUN apt-get update
 # default build-essential fails w. 404 error so use specific focal version of libcurl4
-RUN apt-get install -y wget gcc build-essential socat cppcheck cmake clangd-12
+RUN apt-get install -y wget gcc build-essential socat cppcheck cmake clang-tools-12 clangd-15 tmux neovim git
 
+# Install arm cross compiler tools
+WORKDIR $TOOLDIR
 # download & unzip toolchain
 RUN wget $GCC_ARM_DOWNLOAD_URL
 RUN tar -xjf ./$GCC_ARM_FILENAME*
-ENV PATH=${PATH}:/tools/$GCC_ARM_FILENAME/bin:/tools/$GCC_ARM_FILENAME/arm-none-eabi/bin
+# export paths
+ENV GCC_ARM_UTILS_PATH=$TOOLDIR/$GCC_ARM_FILENAME/arm-none-eabi/bin/
+ENV GCC_ARM_BIN_PATH=$TOOLDIR/$GCC_ARM_FILENAME/bin/
+ENV GCC_ARM_LIB_PATH=$TOOLDIR/$GCC_ARM_FILENAME/lib
+# add paths to PATH
+ENV PATH=${PATH}:$GCC_ARM_UTILS_PATH:$GCC_ARM_BIN_PATH
+
+
+# make the source directory
+RUN mkdir $SRCDIR
+WORKDIR /src
+RUN touch ./$LOGNAME
 
 # check versions
-RUN echo "Installed gcc-arm-none-eabi version "$(arm-none-eabi-gcc --version)
-RUN echo "Installed ccpcheck version "$(cppcheck --version)
-RUN echo "Installed ccpcheck version "$(clang-format-9 --version)
+RUN echo "Installed gcc-arm-none-eabi version "$(arm-none-eabi-gcc --version) >> ./$LOGNAME
+RUN echo "Installed ccpcheck version "$(cppcheck --version) >> ./$LOGNAME
+# RUN echo "Installed clang version "$(clang-format-9 --version)
 
 RUN echo "Tool install complete"
 
-WORKDIR /src
+# attempt nvim copy?
+RUN mkdir /root/.config
+
+
+
+

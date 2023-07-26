@@ -12,7 +12,12 @@ int main() {
             b = 1 / a * 2;
         }
         else {
+            // this should always error
             b = 1 / a;
+        }
+
+        if(a > 10000) {
+            a = 0;
         }
     }
 }
