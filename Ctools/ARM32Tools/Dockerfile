@@ -30,7 +30,9 @@ RUN mkdir -p -v /home/$USERNAME/.config/nvim/
 # update and get build tools
 RUN apt-get update
 # default build-essential fails w. 404 error so use specific focal version of libcurl4
-RUN apt-get install -y wget gcc build-essential socat cppcheck cmake clang-tools-12 clangd-15 tmux neovim git
+RUN apt-get install -y wget gcc build-essential ninja-build gettext unzip curl socat cppcheck cmake clang-tools-12 clangd-15 tmux git
+
+RUN ln -s /usr/bin/clangd-15 /usr/bin/clangd
 
 # Install arm cross compiler tools
 WORKDIR $TOOLDIR
@@ -44,6 +46,12 @@ ENV GCC_ARM_LIB_PATH=$TOOLDIR/$GCC_ARM_FILENAME/lib
 # add paths to PATH
 ENV PATH=${PATH}:$GCC_ARM_UTILS_PATH:$GCC_ARM_BIN_PATH
 
+# Get neovim and build from source
+RUN git clone https://github.com/neovim/neovim
+WORKDIR $TOOLDIR/neovim
+RUN git checkout stable
+RUN make CMAKE_BUILD_TYPE=RelWithDebInfo
+RUN make install
 
 # make the source directory
 RUN mkdir $SRCDIR
@@ -53,8 +61,8 @@ RUN touch ./$LOGNAME
 # check versions
 RUN echo "Installed gcc-arm-none-eabi version "$(arm-none-eabi-gcc --version) >> ./$LOGNAME
 RUN echo "Installed ccpcheck version "$(cppcheck --version) >> ./$LOGNAME
-# RUN echo "Installed clang version "$(clang-format-9 --version)
-
+RUN echo "Installed neovim version "$(nvim --version) >> ./$LOGNAME
+RUN cat ./$LOGNAME
 RUN echo "Tool install complete"
 
 # attempt nvim copy?
