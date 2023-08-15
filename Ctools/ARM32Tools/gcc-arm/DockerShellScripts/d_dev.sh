@@ -24,6 +24,10 @@ elif [[ -z ~/.config/vim ]]; then
     DOCKER_COMMAND=$DOCKER_COMMAND" --mount type=bind,src=/home/"$USER"/.config/vim/,target=/home/dev/.config/vim/"
 fi
 
+# if [[ -e ~/.tmux.conf ]]; then 
+#     echo "[+] Found Tmux config, mounting..."
+#     DOCKER_COMMAND=$DOCKER_COMMAND" --mount type=bind,src=/home/"$USER"/.
+
 echo "[+] Starting session..."
 
 DOCKER_COMMAND=$DOCKER_COMMAND" "$1
