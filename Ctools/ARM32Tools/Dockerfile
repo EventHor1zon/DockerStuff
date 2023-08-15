@@ -41,10 +41,10 @@ RUN wget $GCC_ARM_DOWNLOAD_URL
 RUN tar -xjf ./$GCC_ARM_FILENAME*
 # export paths
 ENV GCC_ARM_UTILS_PATH=$TOOLDIR/$GCC_ARM_FILENAME/arm-none-eabi/bin/
-ENV GCC_ARM_BIN_PATH=$TOOLDIR/$GCC_ARM_FILENAME/bin/
+ENV GCC_PATH=$TOOLDIR/$GCC_ARM_FILENAME/bin/
 ENV GCC_ARM_LIB_PATH=$TOOLDIR/$GCC_ARM_FILENAME/lib
 # add paths to PATH
-ENV PATH=${PATH}:$GCC_ARM_UTILS_PATH:$GCC_ARM_BIN_PATH
+ENV PATH=${PATH}:$GCC_ARM_UTILS_PATH:$GCC_PATH
 
 # Get neovim and build from source
 RUN git clone https://github.com/neovim/neovim
@@ -67,7 +67,4 @@ RUN echo "Tool install complete"
 
 # attempt nvim copy?
 RUN mkdir /root/.config
-
-
-
 
