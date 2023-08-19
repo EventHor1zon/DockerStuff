@@ -59,7 +59,7 @@ RUN make install
 
 # import my configuration files
 # TODO: comment this out if not required
-RUN git clone DOTFILE_REPOSITORY_URL
+RUN git clone $DOTFILE_REPOSITORY_URL
 RUN mv dotfiles/nvim/ $CFGDIR
 RUN mv dotfiles/.bashrc $USER_HOMEDIR
 RUN mv dotfiles/.tmux.conf $USER_HOMEDIR
