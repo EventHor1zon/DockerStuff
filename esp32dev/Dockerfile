@@ -13,11 +13,15 @@ ENV LOGNAME="log.txt"
 ENV SRCDIR=/src
 ENV TOOLDIR=/tools
 ENV TOOLCHAIN_URL="https://github.com/espressif/esp-idf.git"
+ENV DOTFILE_URL="https://github.com/EventHor1zon/dotfiles.git"
 ENV IDF_TOOLS_PATH=$TOOLDIR/toolchain
 
 RUN mkdir -p -v $IDF_TOOLS_PATH
 # make config directory and home dir for neovim :)
-RUN mkdir -p -v /home/$USERNAME/.config/nvim/
+RUN mkdir -p -v /home/$USERNAME/.config
+
+ENV USER_HOMEDIR=/home/$USERNAME
+ENV CFGDIR=$USER_HOMEDIR/.config
 
 # update and get build tools
 RUN apt-get update
@@ -38,7 +42,7 @@ WORKDIR $TOOLDIR/esp-idf
 RUN ./install.sh all
 
 # add paths to PATH
-ENV PATH=${PATH}:$TOOLDIR:$IDF_TOOLS_PATH
+ENV PATH=${PATH}:$TOOLDIR:$IDF_TOOLS_PATH:$CFGDIR:$USER_HOMEDIR
 
 # Get neovim and build from source
 WORKDIR $TOOLDIR
@@ -47,6 +51,14 @@ WORKDIR $TOOLDIR/neovim
 RUN git checkout stable
 RUN make CMAKE_BUILD_TYPE=RelWithDebInfo
 RUN make install
+
+# install config and dotfiles
+WORKDIR $TOOLDIR
+RUN git clone $DOTFILE_URL
+RUN mv dotfiles/nvim $CFGDIR
+RUN mv dotfiles/.bashrc $USER_HOMEDIR
+RUN mv dotfiles/.tmux.conf $USER_HOMEDIR
+RUN rm -rf dotfiles
 
 # make the source directory
 RUN mkdir $SRCDIR
